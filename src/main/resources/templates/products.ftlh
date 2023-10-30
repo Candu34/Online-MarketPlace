@@ -2,7 +2,7 @@
 <html>
 <body>
 
-<h1>Market Place</h1><hr>
+<h1>Market Place | <a href="/login">Login</a></h1><hr>
 
 <form action="/" method="get">
     Search products by name <input type="text" name="title"><br>
