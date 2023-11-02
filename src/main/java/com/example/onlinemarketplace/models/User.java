@@ -39,7 +39,7 @@ public class User implements UserDetails {
     private String name;
 
     @Column(name = "active")
-    private boolean active;
+    private Boolean active;
 
     @PrimaryKeyJoinColumn
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -55,12 +55,19 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    private List<Product> products;
+
     @Column(name = "date_of_created")
     private LocalDateTime dateOfCreated;
 
     @PrePersist
     private void init() {
         dateOfCreated = LocalDateTime.now();
+    }
+
+    public boolean isAdmin(){
+        return roles.contains(Role.ROLE_ADMIN);
     }
 
     //security

@@ -1,27 +1,24 @@
 package com.example.onlinemarketplace.configurations;
 
 import com.example.onlinemarketplace.service.CustomUserDetailsService;
-import com.example.onlinemarketplace.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
+@EnableGlobalAuthentication
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Resource
@@ -29,30 +26,29 @@ public class SecurityConfiguration {
 
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/product/**", "images/**", "/registration")
-                        .permitAll()
-                        .anyRequest()
+                .authorizeHttpRequests(
+                        (requests) -> requests
+                                .requestMatchers("/","/registration").permitAll()
+                                .anyRequest().authenticated()
                 )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .permitAll().loginProcessingUrl("/login")
+                .formLogin(
+                        (form) -> form
+                                .loginPage("/login")
+                                .permitAll()
                 )
-                .logout(LogoutConfigurer::permitAll);
-
+                .logout(
+                        (logout) -> logout.permitAll()
+                                .logoutUrl("/logout")
+                );
         return http.build();
     }
 
-    @Bean
-    protected UserDetailsService configure(AuthenticationManagerBuilder auth) throws Exception {
-        return customUserDetailsService;
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(new BCryptPasswordEncoder(8));
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(8);
-    }
 
 }

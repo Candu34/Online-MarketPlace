@@ -34,9 +34,6 @@ public class Product {
     @Column(name = "city")
     private String city;
 
-    @Column(name = "seller")
-    private String nameOfTheSeller;
-
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY,
     mappedBy = "product")
 
@@ -46,6 +43,9 @@ public class Product {
 
     private LocalDateTime dateOfCreated;
 
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @JoinColumn
+    private User user;
     @PrePersist
     private void init(){
         dateOfCreated = LocalDateTime.now();

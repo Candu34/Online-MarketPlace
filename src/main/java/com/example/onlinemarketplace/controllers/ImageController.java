@@ -2,9 +2,7 @@ package com.example.onlinemarketplace.controllers;
 
 
 import com.example.onlinemarketplace.models.Image;
-import com.example.onlinemarketplace.repository.ImageRepository;
 import com.example.onlinemarketplace.service.ImageService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
